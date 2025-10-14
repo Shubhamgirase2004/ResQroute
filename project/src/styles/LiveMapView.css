@@ -1,0 +1,32 @@
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+.livemap-pulse {
+  animation: pulse 2s infinite;
+}
+.livemap-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+.livemap-recenter-btn {
+  position: fixed;
+  z-index: 40;
+  right: 2.5rem; /* right-10 */
+  bottom: 9rem;  /* bottom-36 */
+  background: white;
+  border-radius: 9999px;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 10px rgba(30,64,175,0.18);
+  transition: background 0.2s;
+}
+.livemap-recenter-btn:hover {
+  background: #eff6ff;
+}
