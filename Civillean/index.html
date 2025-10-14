@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="AI-Powered Emergency Vehicle Route Clearance System - Real-time traffic monitoring and emergency dispatch management" />
+    <meta name="keywords" content="emergency, route clearance, traffic management, AI, real-time tracking" />
+    <meta name="author" content="Emergency Systems Team" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Emergency Route Clearance System" />
+    <meta property="og:description" content="AI-Powered Emergency Vehicle Route Clearance System with real-time tracking" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Accessibility -->
+    <meta name="theme-color" content="#DC2626" />
+    
+    <title>Emergency Route Clearance System - AI-Powered Traffic Management</title>
+    
+    <!-- Preload critical fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
