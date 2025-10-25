@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/auth';
+import QuickSOSButton from '../components/QuickSOSButton';
+import toast from 'react-hot-toast';
 import {
   MapPin,
   Clock,
@@ -10,13 +13,16 @@ import {
   Truck,
   Shield,
   Heart,
-  LocateFixed
+  LocateFixed,
+  LogOut
 } from 'lucide-react';
 
 const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2h1YmgtZ2lyYXNlMjciLCJhIjoiY21iYXd2YzdwMTEyMzJxc2NrYWQ1d3FkcSJ9.Z1yFrzGl6zUwixA3Zr-P4A';
 
 const DispatcherDashboard = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  
   const [formData, setFormData] = useState({
     dispatchLocation: '',
     dispatchCoords: null,
@@ -29,6 +35,18 @@ const DispatcherDashboard = () => {
   const [geoError, setGeoError] = useState('');
   const [gettingLocation, setGettingLocation] = useState(false);
   const [isFetchingCoords, setIsFetchingCoords] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login/user');
+    }
+  }, [user, navigate]);
+
+  const handleLogout = () => {
+    logout();
+    toast.success('Logged out successfully');
+    navigate('/login/user');
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -67,7 +85,6 @@ const DispatcherDashboard = () => {
 
   const fetchCoordinates = async (query) => {
     if (!query) return null;
-    // Accept raw coordinates as well
     if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(query)) {
       const [lat, lng] = query.split(',').map(x => Number(x.trim()));
       if (!isNaN(lat) && !isNaN(lng)) return { latitude: lat, longitude: lng };
@@ -131,6 +148,7 @@ const DispatcherDashboard = () => {
     '2': 'bg-yellow-500 text-white',
     '3': 'bg-green-500 text-white'
   };
+  
   const vehicleIcons = {
     ambulance: Heart,
     police: Shield,
@@ -138,10 +156,14 @@ const DispatcherDashboard = () => {
     rescue: Truck
   };
 
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+        {/* Header with Profile and Logout */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="flex items-center justify-between">
             <div>
@@ -153,15 +175,32 @@ const DispatcherDashboard = () => {
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span className="text-sm text-gray-600">System Online</span>
               </div>
-              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                <User className="h-5 w-5 text-white" />
-              </div>
+              
+              {/* Clickable User Profile */}
+              <button
+                onClick={() => navigate('/profile')}
+                className="flex items-center space-x-2 hover:bg-gray-100 rounded-lg p-2 transition-colors"
+              >
+                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                  <User className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-sm font-medium text-gray-700">{user?.name || user?.email || 'User'}</span>
+              </button>
+
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center px-4 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 transition-colors"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </button>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Dispatch Form */}
+          {/* Main Form Section */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Create Emergency Dispatch</h2>
@@ -194,7 +233,6 @@ const DispatcherDashboard = () => {
                         className="p-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 flex items-center justify-center"
                       >
                         <LocateFixed className="h-5 w-5 text-blue-600" />
-                        <span className="sr-only">Use current location</span>
                       </button>
                     </div>
                   </div>
@@ -259,6 +297,7 @@ const DispatcherDashboard = () => {
                     />
                   </div>
                 </div>
+                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Priority Level
@@ -287,6 +326,7 @@ const DispatcherDashboard = () => {
                     ))}
                   </div>
                 </div>
+                
                 <div className="flex justify-end">
                   <button
                     type="submit"
@@ -300,8 +340,10 @@ const DispatcherDashboard = () => {
               </form>
             </div>
           </div>
-          {/* Quick Stats and Actions */}
+          
+          {/* Sidebar Section */}
           <div className="space-y-6">
+            {/* Active Dispatches */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Active Dispatches</h3>
               <div className="space-y-3">
@@ -332,22 +374,41 @@ const DispatcherDashboard = () => {
                 })}
               </div>
             </div>
+            
+            {/* Quick Actions */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <button className="w-full text-left px-4 py-3 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                {/* Emergency Alert - Triggers QuickSOSButton */}
+                <button 
+                  onClick={() => {
+                    const sosButton = document.querySelector('button[title="Emergency SOS"]');
+                    if (sosButton) sosButton.click();
+                  }}
+                  className="w-full text-left px-4 py-3 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                >
                   <div className="flex items-center space-x-3">
                     <AlertTriangle className="h-5 w-5 text-red-600" />
                     <span className="text-sm font-medium text-red-700">Emergency Alert</span>
                   </div>
                 </button>
-                <button className="w-full text-left px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                
+                {/* Schedule Dispatch Button */}
+                <button 
+                  onClick={() => navigate('/schedule-dispatch')}
+                  className="w-full text-left px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                >
                   <div className="flex items-center space-x-3">
                     <Clock className="h-5 w-5 text-blue-600" />
                     <span className="text-sm font-medium text-blue-700">Schedule Dispatch</span>
                   </div>
                 </button>
-                <button className="w-full text-left px-4 py-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+                
+                {/* Route History Button */}
+                <button 
+                  onClick={() => navigate('/route-history')}
+                  className="w-full text-left px-4 py-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                >
                   <div className="flex items-center space-x-3">
                     <Navigation className="h-5 w-5 text-green-600" />
                     <span className="text-sm font-medium text-green-700">Route History</span>
@@ -358,6 +419,9 @@ const DispatcherDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Floating SOS Button */}
+      <QuickSOSButton />
     </div>
   );
 };

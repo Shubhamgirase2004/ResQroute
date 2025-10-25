@@ -23,3 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 .env
+firebase_details
+/public/firebase-messaging-sw.js
+/src/config/firebase.js 
+/src/context/auth.jsx
+/src/utils/notifications.js 

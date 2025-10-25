@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Play, ArrowRight } from 'lucide-react';
 
 const HeroSection = () => {
+  const navigate = useNavigate();
   const [vehiclePosition, setVehiclePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -35,25 +36,26 @@ const HeroSection = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                to="/dispatcher"
+              {/* Get Started Button - Navigates to Signup */}
+              <button
+                onClick={() => navigate('/signup')}
                 className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700 transition-colors group"
               >
                 Get Started
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
+              </button>
 
+              {/* Watch Demo Button */}
               <a 
-                 href="https://youtu.be/h0AF0EYB7Os?si=H_twv-qh4mcArMYr" 
-                 target="_blank" 
+                href="https://youtu.be/h0AF0EYB7Os?si=H_twv-qh4mcArMYr" 
+                target="_blank" 
                 rel="noopener noreferrer"
-                 >
-               <button className="inline-flex items-center justify-center px-8 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-               <Play className="mr-2 h-4 w-4" />
-                 Watch Demo
+              >
+                <button className="inline-flex items-center justify-center px-8 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                  <Play className="mr-2 h-4 w-4" />
+                  Watch Demo
                 </button>
-               </a>
-
+              </a>
             </div>
 
             <div className="flex items-center space-x-8 text-sm text-gray-500">
@@ -134,3 +136,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
